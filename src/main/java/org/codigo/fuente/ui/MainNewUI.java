@@ -1,11 +1,9 @@
-package activemq.ui;
+package org.codigo.fuente.ui;
 
-import activemq.client.Client;
-import activemq.client.CustomMessageListener;
-import activemq.client.MQConnection;
-import sun.management.ManagementFactory;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import org.codigo.fuente.client.Client;
+import org.codigo.fuente.client.CustomMessageListener;
+import org.codigo.fuente.client.MQConnection;
+
 
 import javax.crypto.*;
 import javax.jms.ExceptionListener;
@@ -17,11 +15,13 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.lang.management.ManagementFactory;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -61,8 +61,9 @@ public class MainNewUI extends JFrame {
 
     private Cipher encCipher = null;
     private Cipher decCipher = null;
-    BASE64Decoder decoder = new BASE64Decoder();
-    BASE64Encoder encoder = new BASE64Encoder();
+    
+    Base64.Decoder decoder = Base64.getDecoder();
+    Base64.Encoder encoder = Base64.getEncoder();
 
     //connection details -UI
 
@@ -193,7 +194,7 @@ public class MainNewUI extends JFrame {
     private String decode(String dcdString){
         if(dcdString != null || decCipher != null){
         try {
-            byte[] base641 = decoder.decodeBuffer(dcdString);
+            byte[] base641 = decoder.decode(dcdString);
             return (new String(decCipher.doFinal(base641), "utf-8"));
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -206,7 +207,7 @@ public class MainNewUI extends JFrame {
         if(dcdString != null || decCipher != null){
             try {
                 byte[] raw = encCipher.doFinal(dcdString.getBytes("utf-8"));
-                return encoder.encode(raw);
+                return encoder.encode(raw).toString();
             } catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }

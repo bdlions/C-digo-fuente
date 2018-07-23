@@ -1,5 +1,4 @@
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+package org.codigo;
 
 import javax.crypto.*;
 import java.io.IOException;
@@ -40,14 +39,14 @@ public class Runner {
             byte[] raw = cipher1.doFinal(stringBytes);
 
             // converts to base64 for easier display.
-            BASE64Encoder encoder = new BASE64Encoder();
-            String base64 = encoder.encode(raw);
+            java.util.Base64.Encoder encoder = java.util.Base64.getEncoder();
+            String base64 = encoder.encode(raw).toString();
 
 
             System.out.println(base64);
 
-            BASE64Decoder decoder = new BASE64Decoder();
-            byte[] base641 = decoder.decodeBuffer(base64);
+            java.util.Base64.Decoder decoder = java.util.Base64.getDecoder();
+            byte[] base641 = decoder.decode(base64);
             System.out.println(new String(cipher2.doFinal(base641), "utf-8"));
 
         } catch (NoSuchAlgorithmException e) {

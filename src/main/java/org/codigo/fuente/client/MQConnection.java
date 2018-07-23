@@ -1,4 +1,4 @@
-package activemq.client;
+package org.codigo.fuente.client;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
