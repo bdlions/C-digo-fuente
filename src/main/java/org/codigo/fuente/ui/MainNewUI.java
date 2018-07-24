@@ -4,7 +4,6 @@ import org.codigo.fuente.client.Client;
 import org.codigo.fuente.client.CustomMessageListener;
 import org.codigo.fuente.client.MQConnection;
 
-
 import javax.crypto.*;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
@@ -26,11 +25,8 @@ import java.util.Date;
 import java.util.LinkedList;
 
 /**
- * Created with IntelliJ IDEA.
- * User: lucky
- * Date: 12/9/13
- * Time: 12:11 AM
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: lucky Date: 12/9/13 Time: 12:11 AM To
+ * change this template use File | Settings | File Templates.
  */
 public class MainNewUI extends JFrame {
 
@@ -61,12 +57,11 @@ public class MainNewUI extends JFrame {
 
     private Cipher encCipher = null;
     private Cipher decCipher = null;
-    
+
     Base64.Decoder decoder = Base64.getDecoder();
     Base64.Encoder encoder = Base64.getEncoder();
 
     //connection details -UI
-
     //        private JLabel serverLabel = new JLabel("Server Name/IP");
     private JLabel serverLabel = new JLabel("Nombre del servidor / IP");
     //        private JLabel portLabel = new JLabel("Port");
@@ -91,17 +86,17 @@ public class MainNewUI extends JFrame {
 
     private long lastStart = 0;
 
-
     // SendPanel -- UI
-
     //        private JCheckBox checkbox1 = new JCheckBox("Send Messages");
     private JCheckBox checkbox1 = new JCheckBox("Enviar Mensajes");
     //        private JLabel topicNameLabel = new JLabel("Topic Name");
     private JLabel topicNameLabel = new JLabel("Nombre del Topic");
+    private JLabel queueNameLabel = new JLabel("Nombre del Queue");
     //        private JLabel sendFolderPathLabel = new JLabel("Folder Path");
     private JLabel sendFolderPathLabel = new JLabel("Directorio");
 
     private JTextField sendTopicField = new JTextField("stadapter2");
+    private JTextField sendQField = new JTextField("stadapter2");
     private JTextField sendFolderPath = new JTextField("C:\\Sistema\\Sincronizador\\Enviar");
     private JButton sendFolderButton = new JButton("..");
     private JPanel filePanel = new JPanel(new BorderLayout());
@@ -113,16 +108,17 @@ public class MainNewUI extends JFrame {
     private JLabel clientLabel = new JLabel("ID del Cliente");
     //        private JLabel topicNameLabel = new JLabel("Topic Name");
     private JLabel recvTopicNameLabel = new JLabel("Nombre del Topic");
+    private JLabel recvQNameLabel = new JLabel("Nombre del Queue");
     //        private JLabel sendFolderPathLabel = new JLabel("Folder Path");
     private JLabel folderPathLabel = new JLabel("Directorio");
 
     private JTextField clientID = new JTextField("infrasistemas");
 //    private JTextField recvTopicName = new JTextField("stuadapter");
     private JTextField recvTopicName = new JTextField("stadapter");
+    private JTextField recvQName = new JTextField("stadapter");
     private JTextField recvFolderPath = new JTextField("C:\\Sistema\\Sincronizador\\Recibir");
     private JButton recvButton = new JButton("..");
     private JPanel recvfilePanel = new JPanel(new BorderLayout());
-
 
     //Logs UI
     private JPanel logsPanel = new JPanel();
@@ -145,7 +141,6 @@ public class MainNewUI extends JFrame {
 //    private JTextField file1 = new JTextField("actualizar.txt", 10);
     private JTextField file1 = new JTextField("reinicio.txt", 10);
 
-
     private MQConnection connection = new MQConnection();
     private Client client = null;
     private CustomMessageListener listener = null;
@@ -157,57 +152,61 @@ public class MainNewUI extends JFrame {
 
     public MainNewUI() throws HeadlessException {
         //setting image icon to the frame
+        user.setText("admin");
+        passwordFiled.setText("admin");
         setIconImage(new ImageIcon("agente.png").getImage());
         setLayout(new BorderLayout());
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         createCiphers();
         createUI();
-        if (!SystemTray.isSupported()) {
-            System.out.println("SystemTray is not supported");
-        }else{
-            systemTray = SystemTray.getSystemTray();
-            TrayIcon trayIcon = new TrayIcon(new ImageIcon("agente.jpg").getImage(), "Sincronizador Active MQ");
-            try {
-                systemTray.add(trayIcon);
-            } catch (AWTException e) {
-                System.out.println("TrayIcon could not be added.");
-            }
-            trayIcon.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if(e.getClickCount() ==2){
-                        setVisible(true);
-                        setState(Frame.NORMAL);
-                    }
-                }
-            });
-        }
+//        if (!SystemTray.isSupported()) {
+//            System.out.println("SystemTray is not supported");
+//        }else{
+//            systemTray = SystemTray.getSystemTray();
+//            TrayIcon trayIcon = new TrayIcon(new ImageIcon("agente.jpg").getImage(), "Sincronizador Active MQ");
+//            try {
+//                systemTray.add(trayIcon);
+//            } catch (AWTException e) {
+//                System.out.println("TrayIcon could not be added.");
+//            }
+//            trayIcon.addMouseListener(new MouseAdapter() {
+//                @Override
+//                public void mouseClicked(MouseEvent e) {
+//                    if(e.getClickCount() ==2){
+//                        setVisible(true);
+//                        setState(Frame.NORMAL);
+//                    }
+//                }
+//            });
+//        }
+        setVisible(true);
+        setState(Frame.NORMAL);
         addWindowStateListener(new WindowStateListener() {
             public void windowStateChanged(WindowEvent e) {
-                if(e.getNewState() == Frame.ICONIFIED){
+                if (e.getNewState() == Frame.ICONIFIED) {
                     setVisible(false);
                 }
             }
         });
     }
 
-    private String decode(String dcdString){
-        if(dcdString != null || decCipher != null){
-        try {
-            byte[] base641 = decoder.decode(dcdString);
-            return (new String(decCipher.doFinal(base641), "utf-8"));
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+    private String decode(String dcdString) {
+        if (dcdString != null || decCipher != null) {
+            try {
+                byte[] base641 = decoder.decode(dcdString);
+                return (new String(decCipher.doFinal(base641), "utf-8"));
+            } catch (Exception e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
         return dcdString;
     }
 
-    private String encode(String dcdString){
-        if(dcdString != null || decCipher != null){
+    private String encode(String dcdString) {
+        if (dcdString != null || decCipher != null) {
             try {
                 byte[] raw = encCipher.doFinal(dcdString.getBytes("utf-8"));
-                return encoder.encode(raw).toString();
+                return encoder.encodeToString(raw);
             } catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
@@ -226,7 +225,6 @@ public class MainNewUI extends JFrame {
             encCipher.init(Cipher.ENCRYPT_MODE, key);
             decCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
             decCipher.init(Cipher.DECRYPT_MODE, key);
-
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -295,27 +293,27 @@ public class MainNewUI extends JFrame {
 
 //                String oldPass = JOptionPane.showInputDialog(((JButton)e.getSource()).getParent(), "Old Password:");
 //                String oldPass = JOptionPane.showInputDialog(((JButton)e.getSource()).getParent(), "Vieja contraseña:");
-                int result = JOptionPane.showConfirmDialog(((JButton)e.getSource()).getParent(), messagePanel, "Vieja contraseña:", JOptionPane.OK_CANCEL_OPTION);
-                if(result == JOptionPane.OK_OPTION){
-                String oldPass = jpf.getText();
-                if(password.equals(oldPass)){
-                    jpf.setText("");
-                    label.setText("Nueva contraseña:");
+                int result = JOptionPane.showConfirmDialog(((JButton) e.getSource()).getParent(), messagePanel, "Vieja contraseña:", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    String oldPass = jpf.getText();
+                    if (password.equals(oldPass)) {
+                        jpf.setText("");
+                        label.setText("Nueva contraseña:");
 //                    String newPass = JOptionPane.showInputDialog(((JButton)e.getSource()).getParent(), "New Password:");
 //                    String newPass = JOptionPane.showInputDialog(((JButton)e.getSource()).getParent(), "Nueva contraseña:");
-                    result = JOptionPane.showConfirmDialog(((JButton)e.getSource()).getParent(), messagePanel, "Nueva contraseña:", JOptionPane.OK_CANCEL_OPTION);
-                    if(result == JOptionPane.OK_OPTION){
-                        String newPass = jpf.getText();
-                        if(newPass != null){
-                        password = newPass;
+                        result = JOptionPane.showConfirmDialog(((JButton) e.getSource()).getParent(), messagePanel, "Nueva contraseña:", JOptionPane.OK_CANCEL_OPTION);
+                        if (result == JOptionPane.OK_OPTION) {
+                            String newPass = jpf.getText();
+                            if (newPass != null) {
+                                password = newPass;
 //                        JOptionPane.showMessageDialog(((JButton)e.getSource()).getParent(), "Password changed successfully");
-                        JOptionPane.showMessageDialog(((JButton)e.getSource()).getParent(), "Contraseña cambiada correctamente");
-                    }
-                    }
-                }else{
+                                JOptionPane.showMessageDialog(((JButton) e.getSource()).getParent(), "Contraseña cambiada correctamente");
+                            }
+                        }
+                    } else {
 //                    JOptionPane.showMessageDialog(((JButton)e.getSource()).getParent(), "Wrong Password");
-                    JOptionPane.showMessageDialog(((JButton)e.getSource()).getParent(), "Contraseña incorrecta");
-                }
+                        JOptionPane.showMessageDialog(((JButton) e.getSource()).getParent(), "Contraseña incorrecta");
+                    }
                 }
             }
         });
@@ -331,11 +329,9 @@ public class MainNewUI extends JFrame {
         tabbedPane.addTab("Detalles de la Conexión", null, connectionPanel, "Detalles de la Conexión");
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
-
 //        tabbedPane.addTab("Sender Configuration", null, sendPanel, "Sender Configuration");
         tabbedPane.addTab("Configuración para Enviar", null, sendPanel, "Configuración para Enviar");
         tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
-
 
 //        tabbedPane.addTab("Receiver Configuration", null, receivePanel, "Receiver Configuration");
         tabbedPane.addTab("Configuración para Recibir", null, receivePanel, "Configuración para Recibir");
@@ -360,15 +356,17 @@ public class MainNewUI extends JFrame {
 
         connectionPanel.add(buttonPanel, new GridBagConstraints(0, 4, 2, 1, 2, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(20, 20, 20, 1), 1, 1));
 
-
         sendPanel.setLayout(new GridBagLayout());
         sendPanel.add(checkbox1, new GridBagConstraints(0, 0, 2, 1, 2, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 1, 1), 1, 1));
 
         sendPanel.add(topicNameLabel, new GridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 1, 1), 1, 1));
         sendPanel.add(sendTopicField, new GridBagConstraints(1, 1, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 1, 20), 1, 1));
 
-        sendPanel.add(sendFolderPathLabel, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 100, 1), 1, 1));
-        sendPanel.add(filePanel, new GridBagConstraints(1, 2, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 100, 20), 1, 1));
+        sendPanel.add(queueNameLabel, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 1, 1), 1, 1));
+        sendPanel.add(sendQField, new GridBagConstraints(1, 2, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 1, 20), 1, 1));
+
+        sendPanel.add(sendFolderPathLabel, new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 100, 1), 1, 1));
+        sendPanel.add(filePanel, new GridBagConstraints(1, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 100, 20), 1, 1));
 
         filePanel.add(sendFolderPath, BorderLayout.CENTER);
         filePanel.add(sendFolderButton, BorderLayout.EAST);
@@ -379,12 +377,12 @@ public class MainNewUI extends JFrame {
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    if (selectedFile != null)
+                    if (selectedFile != null) {
                         sendFolderPath.setText(selectedFile.getAbsolutePath());
+                    }
                 }
             }
         });
-
 
         receivePanel.setLayout(new GridBagLayout());
         receivePanel.add(checkbox2, new GridBagConstraints(0, 0, 2, 1, 2, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 1, 1), 1, 1));
@@ -395,8 +393,11 @@ public class MainNewUI extends JFrame {
         receivePanel.add(recvTopicNameLabel, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 1, 1), 1, 1));
         receivePanel.add(recvTopicName, new GridBagConstraints(1, 2, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 1, 20), 1, 1));
 
-        receivePanel.add(folderPathLabel, new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 70, 1), 1, 1));
-        receivePanel.add(recvfilePanel, new GridBagConstraints(1, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 70, 20), 1, 1));
+        receivePanel.add(recvQNameLabel, new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 1, 1), 1, 1));
+        receivePanel.add(recvQName, new GridBagConstraints(1, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 1, 20), 1, 1));
+
+        receivePanel.add(folderPathLabel, new GridBagConstraints(0, 4, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 70, 1), 1, 1));
+        receivePanel.add(recvfilePanel, new GridBagConstraints(1, 4, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 70, 20), 1, 1));
 
         recvfilePanel.add(recvFolderPath, BorderLayout.CENTER);
         recvfilePanel.add(recvButton, BorderLayout.EAST);
@@ -407,12 +408,12 @@ public class MainNewUI extends JFrame {
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    if (selectedFile != null)
+                    if (selectedFile != null) {
                         recvFolderPath.setText(selectedFile.getAbsolutePath());
+                    }
                 }
             }
         });
-
 
 //        logsPanel.setLayout(new BorderLayout());
 //        JScrollPane jScrollPane = new JScrollPane(textArea);
@@ -440,12 +441,12 @@ public class MainNewUI extends JFrame {
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    if (selectedFile != null)
+                    if (selectedFile != null) {
                         monitorDir.setText(selectedFile.getAbsolutePath());
+                    }
                 }
             }
         });
-
 
         //dummy label to look UI good
         configPanel.add(new Label(), new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 1, 1), 1, 1));
@@ -458,12 +459,12 @@ public class MainNewUI extends JFrame {
 
         autoStart.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (autoStart.isSelected())
+                if (autoStart.isSelected()) {
                     startButtonActionPerformed(e);
+                }
             }
         });
         add(tabbedPane);
-
 
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 //        setTitle("Active MQ Client");
@@ -508,7 +509,6 @@ public class MainNewUI extends JFrame {
             }
         });
 
-
         stopBUtton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 stopButtonActionPerformed(evt);
@@ -542,7 +542,6 @@ public class MainNewUI extends JFrame {
             startButtonActionPerformed("test");
         }
 
-
         restart.addItemListener(new ItemListener() {
 
             public void itemStateChanged(ItemEvent e) {
@@ -575,7 +574,6 @@ public class MainNewUI extends JFrame {
                     }
                 }
 
-
 //                if (restart.isSelected()) {
 //                    stopButtonActionPerformed(null);
 //
@@ -600,13 +598,15 @@ public class MainNewUI extends JFrame {
                         //
                     }
                     String fileParent = monitorDir.getText();
-                    if (fileParent == null || fileParent.trim().length() == 0)
+                    if (fileParent == null || fileParent.trim().length() == 0) {
                         continue;
+                    }
 //                    File fileC = new File(fileParent.trim() + File.separator + file.getText().trim());
                     File fileR = new File(fileParent.trim() + File.separator + file1.getText().trim());
 //                    if (!fileC.exists() && !fileR.exists())
-                    if (!fileR.exists())
+                    if (!fileR.exists()) {
                         continue;
+                    }
 
                     if (!startButton.isEnabled()) {
 //                            if ((Integer.parseInt(restartTime.getText().trim()) *  60 * 1000) <= (new Date().getTime() - lastStart)) {
@@ -639,7 +639,6 @@ public class MainNewUI extends JFrame {
         connectionUrlField.setText(url.toString());
     }
 
-
     /**
      * @param args the command line arguments
      */
@@ -658,24 +657,25 @@ public class MainNewUI extends JFrame {
             }
         }
 
-        if(logs.exists()){
+        if (logs.exists()) {
             File parent = new File(logs.getAbsolutePath()).getParentFile();
-            if(parent != null){
+            if (parent != null) {
                 File[] list = parent.listFiles(new FilenameFilter() {
                     public boolean accept(File dir, String name) {
                         return name.endsWith(".txt") && name.startsWith("logs_");
                     }
                 });
                 long days = 5 * 24 * 60 * 60 * 1000l;
-                for(File file : list){
-                    if(file.isFile()){
-                        try{
-                            String name = file.getName().replace("logs_","").replace(".txt","");
+                for (File file : list) {
+                    if (file.isFile()) {
+                        try {
+                            String name = file.getName().replace("logs_", "").replace(".txt", "");
                             Long value = Long.parseLong(name.trim());
-                            if(value < (System.currentTimeMillis() - days)){
+                            if (value < (System.currentTimeMillis() - days)) {
                                 file.delete();
                             }
-                        }catch (Exception e){}
+                        } catch (Exception e) {
+                        }
                     }
                 }
             }
@@ -757,7 +757,6 @@ public class MainNewUI extends JFrame {
         file1.setEnabled(true);
     }
 
-
     //START Action
     private void startButtonActionPerformed(Object evt) {
         //Already started
@@ -783,7 +782,6 @@ public class MainNewUI extends JFrame {
         }
 
         //Populating all the filed values to connection object
-
         connection.setUrl(connectionUrlField.getText());
         connection.setConnectionFactory("ConnectionFactory");
         connection.setExceptionListener(new CustomExceptionListener());
@@ -830,15 +828,16 @@ public class MainNewUI extends JFrame {
         if (checkbox1.isSelected()) {
             try {
                 //Creating client which will send messages to topic
-                client = new Client(connection, sendTopicField.getText().trim());
+                client = new Client(connection, sendTopicField.getText().trim(), sendQField.getText().trim());
                 File f = new File(sendFolderPath.getText().trim());
-                if (f.exists() && f.isDirectory())
+                if (f.exists() && f.isDirectory()) {
                     client.start(f, textArea);
+                }
             } catch (JMSException e) {
 //                JOptionPane.showMessageDialog(this, "Unable to create Publisher on " + sendTopicField.getText().trim() +
 //                        ". Reason : " + e.getLocalizedMessage());
-                JOptionPane.showMessageDialog(this, "No se puede crear en el Editor " + sendTopicField.getText().trim() +
-                        ". Razón : " + e.getLocalizedMessage());
+                JOptionPane.showMessageDialog(this, "No se puede crear en el Editor " + sendTopicField.getText().trim()
+                        + ". Razón : " + e.getLocalizedMessage());
 //                textArea.append("No se puede crear en el Editor " + sendTopicField.getText().trim() +
 //                        ". Razón : " + e.getLocalizedMessage());
                 e.printStackTrace();
@@ -852,7 +851,7 @@ public class MainNewUI extends JFrame {
                 //Creating listener which will recv messages to topic
                 listener = new CustomMessageListener(textArea);
                 listener.setFile(new File(recvFolderPath.getText().trim()));
-                subscriber = connection.createMessageConsumer(recvTopicName.getText().trim(), listener);
+                subscriber = connection.createMessageConsumer(recvTopicName.getText().trim(), recvQName.getText().trim(), listener);
             } catch (Exception e) {
 //                JOptionPane.showMessageDialog(this, "Unable to create Consumer on " + recvTopicName.getText().trim() +
 //                        ". Reason : " + e.getLocalizedMessage());
@@ -867,7 +866,6 @@ public class MainNewUI extends JFrame {
         }
         System.out.println("Started");
     }
-
 
     private void restart() {
         if (client != null) {
@@ -926,15 +924,16 @@ public class MainNewUI extends JFrame {
         if (checkbox1.isSelected()) {
             try {
                 //Creating client which will send messages to topic
-                client = new Client(connection, sendTopicField.getText().trim());
+                client = new Client(connection, sendTopicField.getText().trim(), sendQField.getText().trim());
                 File f = new File(sendFolderPath.getText().trim());
-                if (f.exists() && f.isDirectory())
+                if (f.exists() && f.isDirectory()) {
                     client.start(f, textArea);
+                }
             } catch (JMSException e) {
 //                JOptionPane.showMessageDialog(this, "Unable to create Publisher on " + sendTopicField.getText().trim() +
 //                        ". Reason : " + e.getLocalizedMessage());
-                JOptionPane.showMessageDialog(this, "No se puede crear en el Editor " + sendTopicField.getText().trim() +
-                        ". Razón : " + e.getLocalizedMessage());
+                JOptionPane.showMessageDialog(this, "No se puede crear en el Editor " + sendTopicField.getText().trim()
+                        + ". Razón : " + e.getLocalizedMessage());
 //                textArea.append("No se puede crear en el Editor " + sendTopicField.getText().trim() +
 //                        ". Razón : " + e.getLocalizedMessage());
                 e.printStackTrace();
@@ -948,7 +947,7 @@ public class MainNewUI extends JFrame {
                 //Creating listener which will recv messages to topic
                 listener = new CustomMessageListener(textArea);
                 listener.setFile(new File(recvFolderPath.getText().trim()));
-                subscriber = connection.createMessageConsumer(recvTopicName.getText().trim(), listener);
+                subscriber = connection.createMessageConsumer(recvTopicName.getText().trim(), recvQName.getText().trim(), listener);
             } catch (Exception e) {
 //                JOptionPane.showMessageDialog(this, "Unable to create Consumer on " + recvTopicName.getText().trim() +
 //                        ". Reason : " + e.getLocalizedMessage());
@@ -961,7 +960,6 @@ public class MainNewUI extends JFrame {
             }
 
         }
-
 
     }
 
@@ -1057,7 +1055,6 @@ public class MainNewUI extends JFrame {
     // This class listens all the exceptions on Active MQ connection
     class CustomExceptionListener implements ExceptionListener {
 
-
         public void onException(JMSException e) {
 //            System.out.println("Exception on JMS Connection. " + e.getLocalizedMessage());
             System.out.println("Error en la conexión JMS. " + e.getLocalizedMessage());
@@ -1089,7 +1086,6 @@ public class MainNewUI extends JFrame {
             out = new FileWriter(configFile);
 
             //Write each property in each line
-
 //            out.write(serverField.getText());
 //            out.write(System.getProperty("line.separator"));
 //            out.write(portField.getText());
@@ -1122,7 +1118,6 @@ public class MainNewUI extends JFrame {
 //            out.write(System.getProperty("line.separator"));
 //            out.write(file.getText());
 //            out.write(System.getProperty("line.separator"));
-
             out.write("enc");
             out.write(System.getProperty("line.separator"));
             out.write(encode(serverField.getText()));
@@ -1219,7 +1214,7 @@ public class MainNewUI extends JFrame {
                 file1.setText(in.readLine());
                 userName = in.readLine();
                 password = in.readLine();
-            }else{
+            } else {
                 serverField.setText(decode(in.readLine()));
                 portField.setText(decode(in.readLine()));
                 IsFailoverBox.setSelected("true".equalsIgnoreCase(decode(in.readLine())) ? true : false);
@@ -1255,14 +1250,18 @@ public class MainNewUI extends JFrame {
         }
 //        if(restartTime.getText() == null || restartTime.getText().trim().length() == 0)
 //            restartTime.setText("6");
-        if (file.getText() == null || file.getText().trim().length() == 0)
+        if (file.getText() == null || file.getText().trim().length() == 0) {
             file.setText("close.txt");
-        if (file1.getText() == null || file1.getText().trim().length() == 0)
+        }
+        if (file1.getText() == null || file1.getText().trim().length() == 0) {
             file1.setText("reset.txt");
-        if (userName == null || userName.trim().length() == 0)
+        }
+        if (userName == null || userName.trim().length() == 0) {
             userName = "admin";
-        if (password == null || password.trim().length() == 0)
+        }
+        if (password == null || password.trim().length() == 0) {
             password = "admin";
+        }
     }
 
     // This is responsible to customize the log statements logged in Logs panel
@@ -1280,7 +1279,6 @@ public class MainNewUI extends JFrame {
         }
 
     }
-
 
     private static String getProcessId(final String fallback) {
         // Note: may fail in some JVM implementations

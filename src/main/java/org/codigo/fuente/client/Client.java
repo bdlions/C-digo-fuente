@@ -19,17 +19,19 @@ public class Client {
     private MessageProducer producer;
     private MQConnection connection;
     private String topicName;
+    private String qName;
 
-    public Client(MQConnection mqConnection, String qName) throws JMSException {
+    public Client(MQConnection mqConnection, String topicName, String qName) throws JMSException {
         this.connection = mqConnection;
-        topicName = qName;
+        topicName = topicName;
+        qName = qName;
         initialize();
     }
 
     //Creamos la sesión
     public void initialize() throws JMSException {
         session = connection.getSession();
-        producer = connection.createProducer(topicName);
+        producer = connection.createProducer(topicName, qName);
     }
 
     public void sendMessage(String text) throws JMSException {

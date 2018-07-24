@@ -1,9 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="ActiveMQ:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/ActiveMQ_jar</output-path>
-    <root id="archive" name="ActiveMQ.jar">
-      <element id="module-output" name="ActiveMQ" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/../Servidor Apache ActiveMQ-5.8.0/activemq-all-5.8.0.jar" path-in-jar="/" />
-    </root>
-  </artifact>
-</component>

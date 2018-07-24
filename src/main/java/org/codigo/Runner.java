@@ -40,7 +40,7 @@ public class Runner {
 
             // converts to base64 for easier display.
             java.util.Base64.Encoder encoder = java.util.Base64.getEncoder();
-            String base64 = encoder.encode(raw).toString();
+            String base64 = encoder.encodeToString(raw);
 
 
             System.out.println(base64);

@@ -1,0 +1,6 @@
+log*
+out/*
+activemq-data/*
+data/*
+target/*
+
