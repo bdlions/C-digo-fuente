@@ -15,6 +15,7 @@ import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -25,7 +26,7 @@ import org.apache.activemq.broker.TransportConnector;
  *
  * @author alamgir
  */
-public class ActiveMQServerTest implements Runnable, ExceptionListener {
+public class ActiveMQServerTest implements Runnable, ExceptionListener, MessageListener {
 
     private static final String _brokerName = "messageQBroker";
     private static final String _dataDirectoryName = "data";
@@ -51,6 +52,7 @@ public class ActiveMQServerTest implements Runnable, ExceptionListener {
 
             // Create a MessageConsumer from the Session to the Topic or Queue
             MessageConsumer consumer = session.createConsumer(destination);
+            consumer.setMessageListener(this);
 
             while (running) {
                 // Wait for a message
@@ -98,5 +100,10 @@ public class ActiveMQServerTest implements Runnable, ExceptionListener {
         } catch (Exception ex) {
             Logger.getLogger(ActiveMQServerTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @Override
+    public void onMessage(Message arg0) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

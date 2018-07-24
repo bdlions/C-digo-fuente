@@ -26,6 +26,7 @@ public class CustomMessageListener implements MessageListener {
     }
 
     //El mensaje entra aqui
+    @Override
     public void onMessage(Message message) {
         System.out.println(formatter.format(new Date()) + " Received Msg ");
         try {

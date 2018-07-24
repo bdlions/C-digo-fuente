@@ -11,12 +11,13 @@ import java.util.HashMap;
 import java.util.Properties;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.TransportConnector;
+import org.apache.activemq.broker.region.QueueSubscription;
 
 /**
  * Created by IntelliJ IDEA. User: poornachand Date: Feb 8, 2013 Time: 5:13:17
  * PM To change this template use File | Settings | File Templates.
  */
-public class MQConnection {
+public class MQConnection{
 
     private String url;
     private String username;
@@ -150,11 +151,10 @@ public class MQConnection {
     }
 
     //Método para crear el mensaje de un topic
-    public TopicSubscriber createMessageConsumer(String topicName, String queueName, MessageListener listener) throws Exception {
+    public TopicSubscriber createTopicMessageConsumer(String topicName, MessageListener listener) throws Exception {
         try {
             //Asocio el topic
             Topic destination  = session.createTopic(topicName);
-            Queue destinationQ  = session.createQueue(queueName);
 //            Topic destination = (Topic) ctx.lookup(topicName);
 
             //Subscribo al topic especificado utilizando el Client Id ingresado
@@ -172,21 +172,63 @@ public class MQConnection {
         }
     }
 
+    //Método para crear el mensaje de un topic
+    public MessageConsumer createQMessageConsumer( String queueName, MessageListener listener) throws Exception {
+        try {
+            //Asocio el topic
+            
+            Queue destinationQ  = session.createQueue(queueName);
+//            Topic destination = (Topic) ctx.lookup(topicName);
+
+            //Subscribo al topic especificado utilizando el Client Id ingresado
+            
+
+            //Asigno la función para escuchar los mensajes, así todos los mensajes que llegan son procesados
+            MessageConsumer consumer = session.createConsumer(destinationQ);
+            consumer.setMessageListener(listener);
+
+            return consumer;
+        } catch (JMSException e) {
+            System.out.println("Imposible crear el consumidor.");
+            System.out.println(e.getLocalizedMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
     //Método para crear el responsable de crear el mensaje de un topic
-    public MessageProducer createProducer(String topicName, String queueName) throws JMSException {
+    public MessageProducer createTopicProducer(String topicName) throws JMSException {
 
         try {
             //Asocio el topic
             Topic destination = session.createTopic(topicName);
-            Queue destinationQ = session.createQueue(queueName);
             
 
             //Creo un MessageProducer de la sesión del topic
             MessageProducer producer = session.createProducer(destination);
-            MessageProducer producerQ = session.createProducer(destinationQ);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
             return producer;
+        } catch (JMSException e) {
+            System.out.println("Imposible crear el remitente.");
+            System.out.println(e.getLocalizedMessage());
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw e;
+        }
+    }
+    //Método para crear el responsable de crear el mensaje de un topic
+    public MessageProducer createQProducer(String queueName) throws JMSException {
+
+        try {
+            //Asocio el topic
+            Queue destinationQ = session.createQueue(queueName);
+            
+
+            //Creo un MessageProducer de la sesión del topic
+            MessageProducer producerQ = session.createProducer(destinationQ);
+            producerQ.setDeliveryMode(DeliveryMode.PERSISTENT);
+
+            return producerQ;
         } catch (JMSException e) {
             System.out.println("Imposible crear el remitente.");
             System.out.println(e.getLocalizedMessage());

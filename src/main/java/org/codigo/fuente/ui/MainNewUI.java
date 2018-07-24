@@ -95,8 +95,8 @@ public class MainNewUI extends JFrame {
     //        private JLabel sendFolderPathLabel = new JLabel("Folder Path");
     private JLabel sendFolderPathLabel = new JLabel("Directorio");
 
-    private JTextField sendTopicField = new JTextField("stadapter2");
-    private JTextField sendQField = new JTextField("stadapter2");
+    private JTextField sendTopicField = new JTextField("stadapter");
+    private JTextField sendQField = new JTextField("stadapter");
     private JTextField sendFolderPath = new JTextField("C:\\Sistema\\Sincronizador\\Enviar");
     private JButton sendFolderButton = new JButton("..");
     private JPanel filePanel = new JPanel(new BorderLayout());
@@ -851,7 +851,8 @@ public class MainNewUI extends JFrame {
                 //Creating listener which will recv messages to topic
                 listener = new CustomMessageListener(textArea);
                 listener.setFile(new File(recvFolderPath.getText().trim()));
-                subscriber = connection.createMessageConsumer(recvTopicName.getText().trim(), recvQName.getText().trim(), listener);
+                subscriber = connection.createTopicMessageConsumer(recvTopicName.getText().trim(), listener);
+                connection.createQMessageConsumer(recvQName.getText().trim(), listener);
             } catch (Exception e) {
 //                JOptionPane.showMessageDialog(this, "Unable to create Consumer on " + recvTopicName.getText().trim() +
 //                        ". Reason : " + e.getLocalizedMessage());
@@ -947,7 +948,8 @@ public class MainNewUI extends JFrame {
                 //Creating listener which will recv messages to topic
                 listener = new CustomMessageListener(textArea);
                 listener.setFile(new File(recvFolderPath.getText().trim()));
-                subscriber = connection.createMessageConsumer(recvTopicName.getText().trim(), recvQName.getText().trim(), listener);
+                subscriber = connection.createTopicMessageConsumer(recvQName.getText().trim(), listener);
+                connection.createQMessageConsumer(recvQName.getText().trim(), listener);
             } catch (Exception e) {
 //                JOptionPane.showMessageDialog(this, "Unable to create Consumer on " + recvTopicName.getText().trim() +
 //                        ". Reason : " + e.getLocalizedMessage());

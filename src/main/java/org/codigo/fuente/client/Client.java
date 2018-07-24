@@ -23,15 +23,21 @@ public class Client {
 
     public Client(MQConnection mqConnection, String topicName, String qName) throws JMSException {
         this.connection = mqConnection;
-        topicName = topicName;
-        qName = qName;
+        this.topicName = topicName;
+        this.qName = qName;
         initialize();
     }
 
     //Creamos la sesión
     public void initialize() throws JMSException {
         session = connection.getSession();
-        producer = connection.createProducer(topicName, qName);
+        if(qName != null || !qName.isEmpty()){
+            producer = connection.createQProducer(qName);
+        }else{
+            producer = connection.createTopicProducer(topicName);
+        }
+        
+        
     }
 
     public void sendMessage(String text) throws JMSException {
@@ -123,61 +129,6 @@ public class Client {
                         if(stop)
                             break;
 
-//                        log(formatter.format(new Date())+ " Reading file : " + t.getName(), null);
-//                        new Thread(new Runnable() {
-//                            public void run() {
-//                                boolean sent = false;
-//                                // Reading teh file
-//                                BufferedReader reader = null;
-//                                try {
-////                                    System.out.println(formatter.format(new Date())+ " Reading file : " + t.getName());
-////                                    log(formatter.format(new Date())+ " Reading file : " + t.getName(), null);
-//                                    reader = new BufferedReader(new FileReader(t));
-//                                    StringBuffer buf = new StringBuffer();
-//                                    String str = null;
-//                                    while((str = reader.readLine()) != null){
-//                                        buf.append(str);
-//                                    }
-//
-//                                    try {
-//                                        //Sending file content to topic
-////                                        System.out.println(formatter.format(new Date())+ " Sending");
-//                                        sendMessage(buf.toString());
-//                                        sent = true;
-////                                textArea.append("Número de mensajes enviados : " + noOfMsgs++);
-//                                    } catch (JMSException e) {
-////                                System.out.println("Unable to send Message in the file : " + t.getName());
-////                                        System.out.println("Imposible enviar el mensaje del archivo : " + t.getName());
-//                                        log("Imposible enviar el mensaje del archivo : " + t.getName(), null);
-////                                textArea.append("Imposible enviar el mensaje del archivo : " + t.getName());
-////                                        System.out.println(e.getLocalizedMessage());
-//                                        log(e.getLocalizedMessage(), e);
-////                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                                        sent = false;
-//                                    }
-//                                } catch (FileNotFoundException e) {
-//                                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                                    sent = false;
-//                                } catch (IOException e) {
-//                                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                                    sent = false;
-//                                } finally {
-//                                    if(reader != null){
-//                                        try {
-//                                            reader.close();
-//                                        } catch (IOException e) {
-//                                            //
-//                                        }
-//                                    }
-//                                    if(sent){
-//                                        //IF file content is sent, delete the file
-//                                        t.delete();
-//                                    }
-//                                }
-////                                System.out.println(formatter.format(new Date())+ " Processed file : " + t.getName());
-//                                log(formatter.format(new Date())+ " Processed file : " + t.getName(), null);
-//                            }
-//                        }).start();
                         boolean sent = false;
                         // Reading teh file
                         BufferedReader reader = null;
