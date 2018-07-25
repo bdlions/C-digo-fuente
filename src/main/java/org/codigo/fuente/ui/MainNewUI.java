@@ -96,7 +96,7 @@ public class MainNewUI extends JFrame {
     private JLabel sendFolderPathLabel = new JLabel("Directorio");
 
     private JTextField sendTopicField = new JTextField("stadapter");
-    private JTextField sendQField = new JTextField("stadapter");
+    private JTextField sendQField = new JTextField("");
     private JTextField sendFolderPath = new JTextField("C:\\Sistema\\Sincronizador\\Enviar");
     private JButton sendFolderButton = new JButton("..");
     private JPanel filePanel = new JPanel(new BorderLayout());
@@ -115,7 +115,7 @@ public class MainNewUI extends JFrame {
     private JTextField clientID = new JTextField("infrasistemas");
 //    private JTextField recvTopicName = new JTextField("stuadapter");
     private JTextField recvTopicName = new JTextField("stadapter");
-    private JTextField recvQName = new JTextField("stadapter");
+    private JTextField recvQName = new JTextField("");
     private JTextField recvFolderPath = new JTextField("C:\\Sistema\\Sincronizador\\Recibir");
     private JButton recvButton = new JButton("..");
     private JPanel recvfilePanel = new JPanel(new BorderLayout());
@@ -152,35 +152,35 @@ public class MainNewUI extends JFrame {
 
     public MainNewUI() throws HeadlessException {
         //setting image icon to the frame
-        user.setText("admin");
-        passwordFiled.setText("admin");
+        //user.setText("admin");
+        //passwordFiled.setText("admin");
         setIconImage(new ImageIcon("agente.png").getImage());
         setLayout(new BorderLayout());
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         createCiphers();
         createUI();
-//        if (!SystemTray.isSupported()) {
-//            System.out.println("SystemTray is not supported");
-//        }else{
-//            systemTray = SystemTray.getSystemTray();
-//            TrayIcon trayIcon = new TrayIcon(new ImageIcon("agente.jpg").getImage(), "Sincronizador Active MQ");
-//            try {
-//                systemTray.add(trayIcon);
-//            } catch (AWTException e) {
-//                System.out.println("TrayIcon could not be added.");
-//            }
-//            trayIcon.addMouseListener(new MouseAdapter() {
-//                @Override
-//                public void mouseClicked(MouseEvent e) {
-//                    if(e.getClickCount() ==2){
-//                        setVisible(true);
-//                        setState(Frame.NORMAL);
-//                    }
-//                }
-//            });
-//        }
-        setVisible(true);
-        setState(Frame.NORMAL);
+        if (!SystemTray.isSupported()) {
+            System.out.println("SystemTray is not supported");
+        }else{
+            systemTray = SystemTray.getSystemTray();
+            TrayIcon trayIcon = new TrayIcon(new ImageIcon("agente.jpg").getImage(), "Sincronizador Active MQ");
+            try {
+                systemTray.add(trayIcon);
+            } catch (AWTException e) {
+                System.out.println("TrayIcon could not be added.");
+            }
+            trayIcon.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if(e.getClickCount() ==2){
+                        setVisible(true);
+                        setState(Frame.NORMAL);
+                    }
+                }
+            });
+        }
+//        setVisible(true);
+//        setState(Frame.NORMAL);
         addWindowStateListener(new WindowStateListener() {
             public void windowStateChanged(WindowEvent e) {
                 if (e.getNewState() == Frame.ICONIFIED) {
@@ -720,10 +720,12 @@ public class MainNewUI extends JFrame {
         IsFailoverBox.setEnabled(false);
         checkbox1.setEnabled(false);
         sendTopicField.setEnabled(false);
+        sendQField.setEnabled(false);
         sendFolderPath.setEnabled(false);
         sendFolderButton.setEnabled(false);
         checkbox2.setEnabled(false);
         recvTopicName.setEnabled(false);
+        recvQName.setEnabled(false);
         recvFolderPath.setEnabled(false);
         recvButton.setEnabled(false);
         clientID.setEnabled(false);
@@ -742,10 +744,12 @@ public class MainNewUI extends JFrame {
         IsFailoverBox.setEnabled(true);
         checkbox1.setEnabled(true);
         sendTopicField.setEnabled(true);
+        sendQField.setEnabled(true);
         sendFolderPath.setEnabled(true);
         sendFolderButton.setEnabled(true);
         checkbox2.setEnabled(true);
         recvTopicName.setEnabled(true);
+        recvQName.setEnabled(true);
         recvFolderPath.setEnabled(true);
         recvButton.setEnabled(true);
         clientID.setEnabled(true);
@@ -1018,9 +1022,12 @@ public class MainNewUI extends JFrame {
         }
 
         if (checkbox1.isSelected()) {
-            if (isEmpty(sendTopicField.getText())) {
-//                throw new Exception("Topic Name to send messages is empty. Please fill the field");
-                throw new Exception("El nombre del Topic está vacío. Por favor complete los datos");
+            if (!isEmpty(sendTopicField.getText()) && !isEmpty(sendQField.getText())) {
+                throw new Exception("You can't assign both Topic Name and Queue Name to send messages. Please assign either Topic Name or Queue Name.");
+            }
+            if (isEmpty(sendTopicField.getText()) && isEmpty(sendQField.getText())) {
+                throw new Exception("Topic Name and Queue Name to send messages are empty. Please fill any one field.");
+                //throw new Exception("El nombre del Topic está vacío. Por favor complete los datos");
             }
             if (isEmpty(sendFolderPath.getText())) {
 //                throw new Exception("Sender Folder Path is empty. Please fill the field");
@@ -1038,9 +1045,14 @@ public class MainNewUI extends JFrame {
 //                throw new Exception("ClientID is empty. Please fill the field");
                 throw new Exception("El ID del Cliente no puede estar vacío. Por favor complete los datos");
             }
-            if (isEmpty(recvTopicName.getText())) {
-//                throw new Exception("Topic Name to receive messages is empty. Please fill the field");
-                throw new Exception("El nombre del Topic está vacío. Por favor complete los datos");
+            if ( !isEmpty(recvTopicName.getText()) && !isEmpty(recvTopicName.getText())) {
+                throw new Exception("You can't assign both Topic Name and Queue Name to receive messages. Please assign either Topic Name or Queue Name.");
+                //throw new Exception("El nombre del Topic está vacío. Por favor complete los datos");
+            }
+            
+            if ( isEmpty(recvTopicName.getText()) && isEmpty(recvTopicName.getText())) {
+                throw new Exception("Topic Name and Queue Name to receive messages are empty. Please fill any one field.");
+                //throw new Exception("El nombre del Topic está vacío. Por favor complete los datos");
             }
             if (isEmpty(recvFolderPath.getText())) {
 //                throw new Exception("Receiver Folder Path is empty. Please fill the field");
@@ -1135,12 +1147,16 @@ public class MainNewUI extends JFrame {
             out.write(System.getProperty("line.separator"));
             out.write(encode(sendTopicField.getText()));
             out.write(System.getProperty("line.separator"));
+            out.write(encode(sendQField.getText()));
+            out.write(System.getProperty("line.separator"));
             out.write(encode(sendFolderPath.getText()));
             out.write(System.getProperty("line.separator"));
 
             out.write(encode(checkbox2.isSelected() ? "true" : "false"));
             out.write(System.getProperty("line.separator"));
             out.write(encode(recvTopicName.getText()));
+            out.write(System.getProperty("line.separator"));
+            out.write(encode(recvQName.getText()));
             out.write(System.getProperty("line.separator"));
             out.write(encode(recvFolderPath.getText()));
             out.write(System.getProperty("line.separator"));
@@ -1202,10 +1218,12 @@ public class MainNewUI extends JFrame {
 
                 checkbox1.setSelected("true".equalsIgnoreCase(in.readLine()) ? true : false);
                 sendTopicField.setText(in.readLine());
+                sendQField.setText(in.readLine());
                 sendFolderPath.setText(in.readLine());
 
                 checkbox2.setSelected("true".equalsIgnoreCase(in.readLine()) ? true : false);
                 recvTopicName.setText(in.readLine());
+                recvQName.setText(in.readLine());
                 recvFolderPath.setText(in.readLine());
                 clientID.setText(in.readLine());
                 autoStart.setSelected("true".equalsIgnoreCase(in.readLine()));
@@ -1224,10 +1242,12 @@ public class MainNewUI extends JFrame {
 
                 checkbox1.setSelected("true".equalsIgnoreCase(decode(in.readLine())) ? true : false);
                 sendTopicField.setText(decode(in.readLine()));
+                sendQField.setText(decode(in.readLine()));
                 sendFolderPath.setText(decode(in.readLine()));
 
                 checkbox2.setSelected("true".equalsIgnoreCase(decode(in.readLine())) ? true : false);
                 recvTopicName.setText(decode(in.readLine()));
+                recvQName.setText(decode(in.readLine()));
                 recvFolderPath.setText(decode(in.readLine()));
                 clientID.setText(decode(in.readLine()));
                 autoStart.setSelected("true".equalsIgnoreCase(decode(in.readLine())));
