@@ -855,8 +855,14 @@ public class MainNewUI extends JFrame {
                 //Creating listener which will recv messages to topic
                 listener = new CustomMessageListener(textArea);
                 listener.setFile(new File(recvFolderPath.getText().trim()));
-                subscriber = connection.createTopicMessageConsumer(recvTopicName.getText().trim(), listener);
-                connection.createQMessageConsumer(recvQName.getText().trim(), listener);
+                if(!isEmpty(recvTopicName.getText()))
+                {
+                    subscriber = connection.createTopicMessageConsumer(recvTopicName.getText().trim(), listener);
+                }   
+                if(!isEmpty(recvQName.getText()))
+                {
+                    connection.createQMessageConsumer(recvQName.getText().trim(), listener);
+                }
             } catch (Exception e) {
 //                JOptionPane.showMessageDialog(this, "Unable to create Consumer on " + recvTopicName.getText().trim() +
 //                        ". Reason : " + e.getLocalizedMessage());
@@ -952,9 +958,16 @@ public class MainNewUI extends JFrame {
                 //Creating listener which will recv messages to topic
                 listener = new CustomMessageListener(textArea);
                 listener.setFile(new File(recvFolderPath.getText().trim()));
-                subscriber = connection.createTopicMessageConsumer(recvQName.getText().trim(), listener);
-                connection.createQMessageConsumer(recvQName.getText().trim(), listener);
-            } catch (Exception e) {
+                if(!isEmpty(recvTopicName.getText()))
+                {
+                    subscriber = connection.createTopicMessageConsumer(recvTopicName.getText().trim(), listener);
+                }   
+                if(!isEmpty(recvQName.getText()))
+                {
+                    connection.createQMessageConsumer(recvQName.getText().trim(), listener);
+                }                
+            } 
+            catch (Exception e) {
 //                JOptionPane.showMessageDialog(this, "Unable to create Consumer on " + recvTopicName.getText().trim() +
 //                        ". Reason : " + e.getLocalizedMessage());
 //                JOptionPane.showMessageDialog(this, "No se puede crear en el consumidor " + recvTopicName.getText().trim() +
@@ -988,6 +1001,14 @@ public class MainNewUI extends JFrame {
                 //
             }
         }
+        if (connection.getBroker() != null) {
+            try {
+                connection.getBroker().stop();
+            } catch (Exception ex) {
+                //
+            }            
+        }
+        
         if (connection != null) {
             //closing the connection
             connection.close();
@@ -1045,12 +1066,12 @@ public class MainNewUI extends JFrame {
 //                throw new Exception("ClientID is empty. Please fill the field");
                 throw new Exception("El ID del Cliente no puede estar vacío. Por favor complete los datos");
             }
-            if ( !isEmpty(recvTopicName.getText()) && !isEmpty(recvTopicName.getText())) {
+            if ( !isEmpty(recvTopicName.getText()) && !isEmpty(recvQName.getText())) {
                 throw new Exception("You can't assign both Topic Name and Queue Name to receive messages. Please assign either Topic Name or Queue Name.");
                 //throw new Exception("El nombre del Topic está vacío. Por favor complete los datos");
             }
             
-            if ( isEmpty(recvTopicName.getText()) && isEmpty(recvTopicName.getText())) {
+            if ( isEmpty(recvTopicName.getText()) && isEmpty(recvQName.getText())) {
                 throw new Exception("Topic Name and Queue Name to receive messages are empty. Please fill any one field.");
                 //throw new Exception("El nombre del Topic está vacío. Por favor complete los datos");
             }

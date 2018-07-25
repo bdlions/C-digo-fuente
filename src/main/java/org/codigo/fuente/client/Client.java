@@ -31,13 +31,11 @@ public class Client {
     //Creamos la sesión
     public void initialize() throws JMSException {
         session = connection.getSession();
-        if(qName != null || !qName.isEmpty()){
+        if(qName != null && !qName.isEmpty()){
             producer = connection.createQProducer(qName);
-        }else{
+        }else if(topicName != null && !topicName.isEmpty()){
             producer = connection.createTopicProducer(topicName);
         }
-        
-        
     }
 
     public void sendMessage(String text) throws JMSException {

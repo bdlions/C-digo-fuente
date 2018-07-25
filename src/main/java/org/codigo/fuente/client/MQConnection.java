@@ -25,6 +25,9 @@ public class MQConnection{
     private String connectionFactoryName;
     private String clientID;
     private ExceptionListener expExceptionListener;
+    
+    BrokerService broker = new BrokerService();
+    
     private static final String _brokerName = "messageQBroker";
     private static final String _dataDirectoryName = "data";
 
@@ -80,6 +83,10 @@ public class MQConnection{
         this.password = password;
     }
 
+    public BrokerService getBroker() {
+        return broker;
+    }
+
     private Connection connection;
     private Session session;
 //    private Context ctx;
@@ -109,7 +116,7 @@ public class MQConnection{
 //            ctx = new InitialContext(properties);
             //Creo el ConnectionFactory
 //            ActiveMQConnectionFactory connectionFactory = (ActiveMQConnectionFactory) ctx.lookup(connectionFactoryName);
-            BrokerService broker = new BrokerService();
+            
 
             TransportConnector connector = new TransportConnector();
 //            connector.setUri(new URI("tcp://0.0.0.0:61617?useJmx=true"));
