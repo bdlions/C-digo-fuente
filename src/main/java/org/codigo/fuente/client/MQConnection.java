@@ -9,6 +9,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.TransportConnector;
 import org.apache.activemq.broker.region.QueueSubscription;
@@ -26,10 +28,15 @@ public class MQConnection{
     private String clientID;
     private ExceptionListener expExceptionListener;
     
-    BrokerService broker = new BrokerService();
+    private BrokerService broker;
+    ActiveMQConnectionFactory connectionFactory;
     
     private static final String _brokerName = "messageQBroker";
     private static final String _dataDirectoryName = "data";
+
+    public MQConnection() {
+    }
+    
 
     public ExceptionListener getExceptionListener() {
         return expExceptionListener;
@@ -83,10 +90,6 @@ public class MQConnection{
         this.password = password;
     }
 
-    public BrokerService getBroker() {
-        return broker;
-    }
-
     private Connection connection;
     private Session session;
 //    private Context ctx;
@@ -120,14 +123,15 @@ public class MQConnection{
 
             TransportConnector connector = new TransportConnector();
 //            connector.setUri(new URI("tcp://0.0.0.0:61617?useJmx=true"));
-            connector.setUri(new URI(url));
+            connector.setUri(new URI(url.replace("failover://", "")));
             
+            broker = new BrokerService();
             broker.addConnector(connector);
 
             broker.setDataDirectory(_dataDirectoryName);
             broker.setBrokerName(_brokerName);
             broker.start();
-            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
+            connectionFactory = new ActiveMQConnectionFactory(url);
 
             //Creo la Conexión
             if (username != null) {
@@ -252,14 +256,23 @@ public class MQConnection{
             }
         } catch (JMSException e) {
             //
+            e.printStackTrace();
         }
         try {
             if (connection != null) //cierro la conexión
             {
                 connection.close();
             }
+            if(broker != null)
+            {
+                broker.stop();
+                broker = null;
+            }
         } catch (JMSException e) {
+            e.printStackTrace();
             //
+        } catch (Exception ex) {
+            Logger.getLogger(MQConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

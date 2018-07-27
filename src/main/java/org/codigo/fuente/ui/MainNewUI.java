@@ -1001,14 +1001,7 @@ public class MainNewUI extends JFrame {
                 //
             }
         }
-        if (connection.getBroker() != null) {
-            try {
-                connection.getBroker().stop();
-            } catch (Exception ex) {
-                //
-            }            
-        }
-        
+       
         if (connection != null) {
             //closing the connection
             connection.close();
