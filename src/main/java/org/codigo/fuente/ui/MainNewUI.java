@@ -378,8 +378,8 @@ public class MainNewUI extends JFrame {
         sendPanel.add(sendFolderPathLabel, new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 100, 1), 1, 1));
         sendPanel.add(filePanel, new GridBagConstraints(1, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 100, 20), 1, 1));
 
-        //sendPanel.add(sendQFolderPathLabel, new GridBagConstraints(0, 4, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 100, 1), 1, 1));
-        //sendPanel.add(fileQPanel, new GridBagConstraints(1, 4, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 100, 20), 1, 1));
+        sendPanel.add(sendQFolderPathLabel, new GridBagConstraints(0, 4, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 100, 1), 1, 1));
+        sendPanel.add(fileQPanel, new GridBagConstraints(1, 4, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 100, 20), 1, 1));
 
         
         filePanel.add(sendFolderPath, BorderLayout.CENTER);
