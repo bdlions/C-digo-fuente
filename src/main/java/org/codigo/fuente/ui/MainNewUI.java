@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.LinkedList;
+import org.codigo.fuente.client.MQServer;
 
 /**
  * Created with IntelliJ IDEA. User: lucky Date: 12/9/13 Time: 12:11 AM To
@@ -151,6 +152,9 @@ public class MainNewUI extends JFrame {
     private SystemTray systemTray = null;
 
     public MainNewUI() throws HeadlessException {
+        
+        //MQServer.getInstance().start();
+        
         //setting image icon to the frame
         //user.setText("admin");
         //passwordFiled.setText("admin");
@@ -1036,11 +1040,11 @@ public class MainNewUI extends JFrame {
         }
 
         if (checkbox1.isSelected()) {
-            if (!isEmpty(sendTopicField.getText()) && !isEmpty(sendQField.getText())) {
-                throw new Exception("You can't assign both Topic Name and Queue Name to send messages. Please assign either Topic Name or Queue Name.");
-            }
+//            if (!isEmpty(sendTopicField.getText()) && !isEmpty(sendQField.getText())) {
+//                throw new Exception("You can't assign both Topic Name and Queue Name to send messages. Please assign either Topic Name or Queue Name.");
+//            }
             if (isEmpty(sendTopicField.getText()) && isEmpty(sendQField.getText())) {
-                throw new Exception("Topic Name and Queue Name to send messages are empty. Please fill any one field.");
+                throw new Exception("Topic Name and Queue Name to send messages are empty. Please fill any one field or both.");
                 //throw new Exception("El nombre del Topic está vacío. Por favor complete los datos");
             }
             if (isEmpty(sendFolderPath.getText())) {
@@ -1059,13 +1063,13 @@ public class MainNewUI extends JFrame {
 //                throw new Exception("ClientID is empty. Please fill the field");
                 throw new Exception("El ID del Cliente no puede estar vacío. Por favor complete los datos");
             }
-            if ( !isEmpty(recvTopicName.getText()) && !isEmpty(recvQName.getText())) {
-                throw new Exception("You can't assign both Topic Name and Queue Name to receive messages. Please assign either Topic Name or Queue Name.");
-                //throw new Exception("El nombre del Topic está vacío. Por favor complete los datos");
-            }
+//            if ( !isEmpty(recvTopicName.getText()) && !isEmpty(recvQName.getText())) {
+//                throw new Exception("You can't assign both Topic Name and Queue Name to receive messages. Please assign either Topic Name or Queue Name.");
+//                //throw new Exception("El nombre del Topic está vacío. Por favor complete los datos");
+//            }
             
             if ( isEmpty(recvTopicName.getText()) && isEmpty(recvQName.getText())) {
-                throw new Exception("Topic Name and Queue Name to receive messages are empty. Please fill any one field.");
+                throw new Exception("Topic Name and Queue Name to receive messages are empty. Please fill any one field or both.");
                 //throw new Exception("El nombre del Topic está vacío. Por favor complete los datos");
             }
             if (isEmpty(recvFolderPath.getText())) {

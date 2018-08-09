@@ -28,7 +28,7 @@ public class MQConnection{
     private String clientID;
     private ExceptionListener expExceptionListener;
     
-    private BrokerService broker;
+    //private BrokerService broker;
     ActiveMQConnectionFactory connectionFactory;
     
     private static final String _brokerName = "messageQBroker";
@@ -121,16 +121,16 @@ public class MQConnection{
 //            ActiveMQConnectionFactory connectionFactory = (ActiveMQConnectionFactory) ctx.lookup(connectionFactoryName);
             
 
-            TransportConnector connector = new TransportConnector();
+            //TransportConnector connector = new TransportConnector();
 //            connector.setUri(new URI("tcp://0.0.0.0:61617?useJmx=true"));
-            connector.setUri(new URI(url.replace("failover://", "")));
+            //connector.setUri(new URI(url.replace("failover://", "")));
             
-            broker = new BrokerService();
-            broker.addConnector(connector);
-
-            broker.setDataDirectory(_dataDirectoryName);
-            broker.setBrokerName(_brokerName);
-            broker.start();
+//            broker = new BrokerService();
+//            broker.addConnector(connector);
+//
+//            broker.setDataDirectory(_dataDirectoryName);
+//            broker.setBrokerName(_brokerName);
+//            broker.start();
             connectionFactory = new ActiveMQConnectionFactory(url);
 
             //Creo la Conexión
@@ -263,11 +263,11 @@ public class MQConnection{
             {
                 connection.close();
             }
-            if(broker != null)
-            {
-                broker.stop();
-                broker = null;
-            }
+//            if(broker != null)
+//            {
+//                broker.stop();
+//                broker = null;
+//            }
         } catch (JMSException e) {
             e.printStackTrace();
             //
