@@ -183,14 +183,8 @@ public class MainNewUI extends JFrame {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if(e.getClickCount() ==2){
-                        setVisible(true);
-                        setState(Frame.NORMAL);
-                    }
-                }
-            });
-        }
-//        setVisible(true);
-//        setState(Frame.NORMAL);
+        setVisible(true);
+        setState(Frame.NORMAL);
         addWindowStateListener(new WindowStateListener() {
             public void windowStateChanged(WindowEvent e) {
                 if (e.getNewState() == Frame.ICONIFIED) {
@@ -375,8 +369,8 @@ public class MainNewUI extends JFrame {
         sendPanel.add(queueNameLabel, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 1, 1), 1, 1));
         sendPanel.add(sendQField, new GridBagConstraints(1, 2, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 1, 20), 1, 1));
 
-        sendPanel.add(sendFolderPathLabel, new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 100, 1), 1, 1));
-        sendPanel.add(filePanel, new GridBagConstraints(1, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 100, 20), 1, 1));
+        sendPanel.add(sendFolderPathLabel, new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 1, 1), 1, 1));
+        sendPanel.add(filePanel, new GridBagConstraints(1, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 1, 20), 1, 1));
 
         sendPanel.add(sendQFolderPathLabel, new GridBagConstraints(0, 4, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 100, 1), 1, 1));
         sendPanel.add(fileQPanel, new GridBagConstraints(1, 4, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 100, 20), 1, 1));
