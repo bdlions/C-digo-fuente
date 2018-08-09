@@ -95,12 +95,16 @@ public class MainNewUI extends JFrame {
     private JLabel queueNameLabel = new JLabel("Nombre del Queue");
     //        private JLabel sendFolderPathLabel = new JLabel("Folder Path");
     private JLabel sendFolderPathLabel = new JLabel("Directorio");
+    private JLabel sendQFolderPathLabel = new JLabel("Queue Directorio");
 
     private JTextField sendTopicField = new JTextField("stadapter");
     private JTextField sendQField = new JTextField("");
     private JTextField sendFolderPath = new JTextField("C:\\Sistema\\Sincronizador\\Enviar");
+    private JTextField sendQFolderPath = new JTextField("C:\\Sistema\\Sincronizador\\QueueEnviar");
     private JButton sendFolderButton = new JButton("..");
+    private JButton sendQFolderButton = new JButton("..");
     private JPanel filePanel = new JPanel(new BorderLayout());
+    private JPanel fileQPanel = new JPanel(new BorderLayout());
 
     // Recv Panel --UI
     //        private JCheckBox checkbox1 = new JCheckBox("Receive Messages");
@@ -144,6 +148,8 @@ public class MainNewUI extends JFrame {
 
     private MQConnection connection = new MQConnection();
     private Client client = null;
+    private Client topicClient = null;
+    private Client queueClient = null;
     private CustomMessageListener listener = null;
     private TopicSubscriber subscriber = null;
 
@@ -153,7 +159,7 @@ public class MainNewUI extends JFrame {
 
     public MainNewUI() throws HeadlessException {
         
-        //MQServer.getInstance().start();
+        MQServer.getInstance().start();
         
         //setting image icon to the frame
         //user.setText("admin");
@@ -372,8 +378,15 @@ public class MainNewUI extends JFrame {
         sendPanel.add(sendFolderPathLabel, new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 100, 1), 1, 1));
         sendPanel.add(filePanel, new GridBagConstraints(1, 3, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 100, 20), 1, 1));
 
+        //sendPanel.add(sendQFolderPathLabel, new GridBagConstraints(0, 4, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 20, 100, 1), 1, 1));
+        //sendPanel.add(fileQPanel, new GridBagConstraints(1, 4, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 100, 20), 1, 1));
+
+        
         filePanel.add(sendFolderPath, BorderLayout.CENTER);
         filePanel.add(sendFolderButton, BorderLayout.EAST);
+        
+        fileQPanel.add(sendQFolderPath, BorderLayout.CENTER);
+        fileQPanel.add(sendQFolderButton, BorderLayout.EAST);
 
         sendFolderButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -383,6 +396,19 @@ public class MainNewUI extends JFrame {
                     File selectedFile = fileChooser.getSelectedFile();
                     if (selectedFile != null) {
                         sendFolderPath.setText(selectedFile.getAbsolutePath());
+                    }
+                }
+            }
+        });
+        
+        sendQFolderButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int returnVal = fileChooser.showOpenDialog(MainNewUI.this);
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    if (selectedFile != null) {
+                        sendQFolderPath.setText(selectedFile.getAbsolutePath());
                     }
                 }
             }
@@ -726,7 +752,9 @@ public class MainNewUI extends JFrame {
         sendTopicField.setEnabled(false);
         sendQField.setEnabled(false);
         sendFolderPath.setEnabled(false);
+        sendQFolderPath.setEnabled(false);
         sendFolderButton.setEnabled(false);
+        sendQFolderButton.setEnabled(false);
         checkbox2.setEnabled(false);
         recvTopicName.setEnabled(false);
         recvQName.setEnabled(false);
@@ -750,7 +778,9 @@ public class MainNewUI extends JFrame {
         sendTopicField.setEnabled(true);
         sendQField.setEnabled(true);
         sendFolderPath.setEnabled(true);
+        sendQFolderPath.setEnabled(true);
         sendFolderButton.setEnabled(true);
+        sendQFolderButton.setEnabled(true);
         checkbox2.setEnabled(true);
         recvTopicName.setEnabled(true);
         recvQName.setEnabled(true);
@@ -836,11 +866,23 @@ public class MainNewUI extends JFrame {
         if (checkbox1.isSelected()) {
             try {
                 //Creating client which will send messages to topic
-                client = new Client(connection, sendTopicField.getText().trim(), sendQField.getText().trim());
-                File f = new File(sendFolderPath.getText().trim());
-                if (f.exists() && f.isDirectory()) {
-                    client.start(f, textArea);
+//                client = new Client(connection, sendTopicField.getText().trim(), sendQField.getText().trim());
+//                File f = new File(sendFolderPath.getText().trim());
+//                if (f.exists() && f.isDirectory()) {
+//                    client.start(f, textArea);
+//                }
+                
+                String topicName = sendTopicField.getText().trim();
+                if(topicName != null && !topicName.isEmpty())
+                {
+                    //Creating topic client which will send messages to topic
+                    topicClient = new Client(connection, topicName, "");
+                    File f = new File(sendFolderPath.getText().trim());
+                    if (f.exists() && f.isDirectory()) {
+                        topicClient.start(f, textArea);
+                    }
                 }
+                
             } catch (JMSException e) {
 //                JOptionPane.showMessageDialog(this, "Unable to create Publisher on " + sendTopicField.getText().trim() +
 //                        ". Reason : " + e.getLocalizedMessage());
@@ -886,6 +928,14 @@ public class MainNewUI extends JFrame {
         if (client != null) {
             //closing the client
             client.close();
+        }
+        if (topicClient != null) {
+            //closing the client
+            topicClient.close();
+        }
+        if (queueClient != null) {
+            //closing the client
+            queueClient.close();
         }
         if (subscriber != null) {
             try {
@@ -996,6 +1046,14 @@ public class MainNewUI extends JFrame {
         if (client != null) {
             //closing the client
             client.close();
+        }
+        if (topicClient != null) {
+            //closing the client
+            topicClient.close();
+        }
+        if (queueClient != null) {
+            //closing the client
+            queueClient.close();
         }
         if (subscriber != null) {
             try {
