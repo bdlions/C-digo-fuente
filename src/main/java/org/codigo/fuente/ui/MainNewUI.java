@@ -183,8 +183,14 @@ public class MainNewUI extends JFrame {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if(e.getClickCount() ==2){
-        setVisible(true);
-        setState(Frame.NORMAL);
+                        setVisible(true);
+                        setState(Frame.NORMAL);
+                    }
+                }
+            });
+        }
+//        setVisible(true);
+//        setState(Frame.NORMAL);
         addWindowStateListener(new WindowStateListener() {
             public void windowStateChanged(WindowEvent e) {
                 if (e.getNewState() == Frame.ICONIFIED) {
