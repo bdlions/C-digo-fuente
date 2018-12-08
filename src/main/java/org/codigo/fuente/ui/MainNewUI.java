@@ -94,7 +94,7 @@ public class MainNewUI extends JFrame {
     private JLabel topicNameLabel = new JLabel("Nombre del Topic");
     private JLabel queueNameLabel = new JLabel("Nombre del Queue");
     //        private JLabel sendFolderPathLabel = new JLabel("Folder Path");
-    private JLabel sendFolderPathLabel = new JLabel("Directorio");
+    private JLabel sendFolderPathLabel = new JLabel("Topic Directorio");
     private JLabel sendQFolderPathLabel = new JLabel("Queue Directorio");
 
     private JTextField sendTopicField = new JTextField("stadapter");
@@ -136,7 +136,8 @@ public class MainNewUI extends JFrame {
     //    private JLabel restartTimeButton = new JLabel("Reiniciar la conexión después de: XX horas");
 //    private JTextField restartTime = new JTextField("6",10);
     private JLabel monitoringDirLabel = new JLabel("Directorio de Monitoreo");
-    private JTextField monitorDir = new JTextField("C:\\Sistema\\Sincronizador", 20);
+    //private JTextField monitorDir = new JTextField("C:\\Sistema\\Sincronizador", 20);
+    private JTextField monitorDir = new JTextField("", 20);
     private JButton dirButton = new JButton("..");
     //    private JLabel fileNameLabel = new JLabel("Cerrar Nombre de archivo");
     private JLabel fileNameLabel = new JLabel("Archivo de reinicio");
@@ -156,11 +157,52 @@ public class MainNewUI extends JFrame {
     private JCheckBox restart = new JCheckBox();
 
     private SystemTray systemTray = null;
+    private Thread monitor = new Thread(){
+        @Override
+        public void run(){
+            while(true){
+                try {
+                    String fileParent = monitorDir.getText();
+                    if (fileParent != null && fileParent.trim().length() != 0 && file1.getText() != null && file1.getText().length() != 0) {
+
+                        File fileR = new File(fileParent + File.separator + file1.getText());
+                        if (fileR.exists()) {
+                            try {
+                                fileR.delete();
+                                System.out.println("Deleting file"+ fileR.getAbsolutePath());
+                            } 
+                            catch (Exception ee) 
+                            {
+                                System.out.println(ee.toString());
+                            }
+                            System.out.println("Restarting Topic and Queue.....");
+                            stopButtonActionPerformed(null);
+                            Thread.sleep(3000);
+                            startButtonActionPerformed(null);
+                        }
+                        else
+                        {
+                            System.out.println("File does not exist for the path : "+fileR.getAbsolutePath());
+                        }
+                    }
+                    else
+                    {
+                        System.out.println("Direcotry does not exist for the path :"+fileParent);
+                    }
+                    Thread.sleep(3000);
+                } 
+                catch (InterruptedException ex) 
+                {
+                    System.out.println(ex.toString());
+                }
+            }
+        }
+    };
 
     public MainNewUI() throws HeadlessException {
         
-        MQServer.getInstance().start();
-        
+        //MQServer.getInstance().start();
+        monitor.start();
         //setting image icon to the frame
         //user.setText("admin");
         //passwordFiled.setText("admin");
@@ -572,6 +614,7 @@ public class MainNewUI extends JFrame {
             startButtonActionPerformed("test");
         }
 
+        
         restart.addItemListener(new ItemListener() {
 
             public void itemStateChanged(ItemEvent e) {
@@ -883,6 +926,17 @@ public class MainNewUI extends JFrame {
                     }
                 }
                 
+                String qName = sendQField.getText().trim();
+                if(qName != null && !qName.isEmpty())
+                {
+                    //Creating queue client which will send messages to topic
+                    queueClient = new Client(connection, "", qName);
+                    File f = new File(sendQFolderPath.getText().trim());
+                    if (f.exists() && f.isDirectory()) {
+                        queueClient.start(f, textArea);
+                    }
+                }
+                
             } catch (JMSException e) {
 //                JOptionPane.showMessageDialog(this, "Unable to create Publisher on " + sendTopicField.getText().trim() +
 //                        ". Reason : " + e.getLocalizedMessage());
@@ -989,10 +1043,32 @@ public class MainNewUI extends JFrame {
         if (checkbox1.isSelected()) {
             try {
                 //Creating client which will send messages to topic
-                client = new Client(connection, sendTopicField.getText().trim(), sendQField.getText().trim());
-                File f = new File(sendFolderPath.getText().trim());
-                if (f.exists() && f.isDirectory()) {
-                    client.start(f, textArea);
+//                client = new Client(connection, sendTopicField.getText().trim(), sendQField.getText().trim());
+//                File f = new File(sendFolderPath.getText().trim());
+//                if (f.exists() && f.isDirectory()) {
+//                    client.start(f, textArea);
+//                }
+                
+                String topicName = sendTopicField.getText().trim();
+                if(topicName != null && !topicName.isEmpty())
+                {
+                    //Creating topic client which will send messages to topic
+                    topicClient = new Client(connection, topicName, "");
+                    File f = new File(sendFolderPath.getText().trim());
+                    if (f.exists() && f.isDirectory()) {
+                        topicClient.start(f, textArea);
+                    }
+                }
+                
+                String qName = sendQField.getText().trim();
+                if(qName != null && !qName.isEmpty())
+                {
+                    //Creating queue client which will send messages to topic
+                    queueClient = new Client(connection, "", qName);
+                    File f = new File(sendQFolderPath.getText().trim());
+                    if (f.exists() && f.isDirectory()) {
+                        queueClient.start(f, textArea);
+                    }
                 }
             } catch (JMSException e) {
 //                JOptionPane.showMessageDialog(this, "Unable to create Publisher on " + sendTopicField.getText().trim() +
@@ -1227,6 +1303,8 @@ public class MainNewUI extends JFrame {
             out.write(System.getProperty("line.separator"));
             out.write(encode(sendFolderPath.getText()));
             out.write(System.getProperty("line.separator"));
+            out.write(encode(sendQFolderPath.getText()));
+            out.write(System.getProperty("line.separator"));
 
             out.write(encode(checkbox2.isSelected() ? "true" : "false"));
             out.write(System.getProperty("line.separator"));
@@ -1296,6 +1374,7 @@ public class MainNewUI extends JFrame {
                 sendTopicField.setText(in.readLine());
                 sendQField.setText(in.readLine());
                 sendFolderPath.setText(in.readLine());
+                sendQFolderPath.setText(in.readLine());
 
                 checkbox2.setSelected("true".equalsIgnoreCase(in.readLine()) ? true : false);
                 recvTopicName.setText(in.readLine());
@@ -1320,6 +1399,7 @@ public class MainNewUI extends JFrame {
                 sendTopicField.setText(decode(in.readLine()));
                 sendQField.setText(decode(in.readLine()));
                 sendFolderPath.setText(decode(in.readLine()));
+                sendQFolderPath.setText(decode(in.readLine()));
 
                 checkbox2.setSelected("true".equalsIgnoreCase(decode(in.readLine())) ? true : false);
                 recvTopicName.setText(decode(in.readLine()));
